@@ -18,7 +18,7 @@ export default async function UpcomingDebtsCard() {
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <CardTitle>Vencimientos</CardTitle>
         <Link
-          href="/protected/debts"
+          href="/protected/finance/debts"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           Ver todas
@@ -50,7 +50,7 @@ export default async function UpcomingDebtsCard() {
                   </p>
                 </div>
                 <Link
-                  href={withReturnTo(`/protected/debts/${debt.id}/pay`, "/protected")}
+                  href={withReturnTo(`/protected/finance/debts/${debt.id}/pay`, "/protected/finance")}
                   className="text-sm underline shrink-0"
                 >
                   Pagar

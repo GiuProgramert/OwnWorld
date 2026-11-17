@@ -124,7 +124,7 @@ where sub.account_id = a.id
 
 ## Funciones RPC del dashboard
 
-Cuatro funciones agregan sobre `movements` (las seis, contando presupuestos, excluyen transferencias: ver [Transferencias](#transferencias-entre-cuentas)) para el dashboard (`app/protected/page.tsx`), evitando el
+Cuatro funciones agregan sobre `movements` (las seis, contando presupuestos, excluyen transferencias: ver [Transferencias](#transferencias-entre-cuentas)) para el dashboard (`app/protected/finance/page.tsx`), evitando el
 límite de 1000 filas de PostgREST (`db.max_rows`): sumar en JS sobre filas crudas subcuenta en
 silencio al pasar ese umbral. Las cuatro son `security invoker` (nunca `security definer`: correrían
 con los permisos del dueño de la función y devolverían movimientos de todos los usuarios) y
@@ -184,7 +184,7 @@ no usa RPC y filtra en JS.
 
 **Única excepción: `get_movements_totals` con `p_account_id`.** Filtrando por una cuenta, las
 transferencias sí cuentan (`transfer_id is null or p_account_id is not null`): la entrante como
-ingreso y la saliente como egreso, para que el "Balance neto" de `/protected/movements` refleje lo
+ingreso y la saliente como egreso, para que el "Balance neto" de `/protected/finance/movements` refleje lo
 que le pasó a esa cuenta. Sin filtro de cuenta se siguen excluyendo, porque las dos patas se
 cancelan en el neto pero inflarían ingresos y egresos. Las demás agregaciones no tienen excepción.
 
@@ -259,7 +259,7 @@ Ambas son `security invoker` con `set search_path = ''`, como el resto de las RP
 Mismo problema que [el saldo](#3-el-saldo-es-incremental-no-calculado) y que los
 [presupuestos](#por-qué-no-hay-trigger-que-descuente-el-presupuesto): un valor guardado que un
 trigger ajuste al insertar/editar/borrar un pago queda descuadrado para siempre en cuanto alguien
-edita o borra ese movimiento por otro camino (`/protected/movements`). `get_debts_status` calcula
+edita o borra ese movimiento por otro camino (`/protected/finance/movements`). `get_debts_status` calcula
 `next_due_date` como `first_due_date + (payments_count) meses` y `finished` como `is_finished OR
 paid_installments >= total_installments`, siempre a partir de los movimientos reales.
 
@@ -314,7 +314,7 @@ puede descuadrar el saldo.
 ## Cuenta principal (`accounts.is_primary`)
 
 `boolean not null default false`. Marca la cuenta que la app preselecciona en el filtro de
-`/protected/movements`, en el dashboard y en el alta de un movimiento.
+`/protected/finance/movements`, en el dashboard y en el alta de un movimiento.
 
 **Se permiten varias cuentas principales por usuario, a propósito.** No hay índice único parcial,
 ni trigger que desmarque las demás, ni RPC que haga el swap atómico: el desempate lo hace la app

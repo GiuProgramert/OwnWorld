@@ -43,7 +43,7 @@ export default function CreateBudgetForm({ movementTypes }: Props) {
       return;
     }
 
-    await revalidateMyDataAndRedirect("/protected/budgets");
+    await revalidateMyDataAndRedirect("/protected/finance/budgets");
   };
 
   return (

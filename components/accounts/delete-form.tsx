@@ -15,7 +15,7 @@ export default function DeleteAccountForm({
 
   const onSubmit = async () => {
     await deleteAccount(initialValues.id);
-    await revalidateMyDataAndRedirect("/protected/accounts");
+    await revalidateMyDataAndRedirect("/protected/finance/accounts");
   };
 
   return (

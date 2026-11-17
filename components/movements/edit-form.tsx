@@ -51,7 +51,7 @@ export default function EditMovementForm({
       return;
     }
 
-    await revalidateMyDataAndRedirect("/protected/movements");
+    await revalidateMyDataAndRedirect("/protected/finance/movements");
   };
 
   return (

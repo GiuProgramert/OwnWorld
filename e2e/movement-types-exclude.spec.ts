@@ -105,7 +105,7 @@ test.describe("movement-types-exclude", () => {
   });
 
   test("P.1 — Gastos por tipo muestra el tipo normal y no el excluido", async ({ page }) => {
-    await page.goto(`/protected?accountId=${mainId}`);
+    await page.goto(`/protected/finance?accountId=${mainId}`);
     const chart = card(page, "Gastos por tipo").locator("svg");
 
     await expect(chart.getByText(axisLabel(typeN.name), { exact: true })).toBeVisible();
@@ -115,7 +115,7 @@ test.describe("movement-types-exclude", () => {
   test("P.2 — Gastos diarios: leyenda sin el excluido y total de hoy solo del normal", async ({
     page,
   }) => {
-    await page.goto(`/protected?accountId=${mainId}&dailyRange=7d`);
+    await page.goto(`/protected/finance?accountId=${mainId}&dailyRange=7d`);
     const daily = card(page, "Gastos diarios por tipo");
     const legend = daily.locator("ul li");
 
@@ -127,19 +127,19 @@ test.describe("movement-types-exclude", () => {
   test("P.3 — Egresos y el listado de movimientos siguen contando el tipo excluido", async ({
     page,
   }) => {
-    await page.goto(`/protected?accountId=${mainId}`);
+    await page.goto(`/protected/finance?accountId=${mainId}`);
     const egresos = page.getByText("Egresos", { exact: true }).locator("xpath=../..");
 
     await expect(egresos).toContainText(`Gs. ${(1_000_000).toLocaleString("es-PY")}`);
 
-    await page.goto(`/protected/movements?accountId=${mainId}`);
+    await page.goto(`/protected/finance/movements?accountId=${mainId}`);
     await expect(page.getByText(typeE.name, { exact: true }).first()).toBeVisible();
   });
 
   test("P.4 — una cuenta con solo gastos excluidos muestra el estado vacío en los dos cards", async ({
     page,
   }) => {
-    await page.goto(`/protected?accountId=${onlyExcludedId}&dailyRange=7d`);
+    await page.goto(`/protected/finance?accountId=${onlyExcludedId}&dailyRange=7d`);
 
     for (const title of ["Gastos por tipo", "Gastos diarios por tipo"]) {
       await expect(card(page, title)).toContainText("No hay gastos registrados en este período.");
@@ -151,7 +151,7 @@ test.describe("movement-types-exclude", () => {
   }) => {
     const badge = "Excluido de gráficos";
 
-    await page.goto("/protected/movement-types");
+    await page.goto("/protected/finance/movement-types");
     const desktopRow = (name: string) =>
       page.locator("tbody tr").filter({ has: page.getByText(name, { exact: true }) });
 
@@ -160,7 +160,7 @@ test.describe("movement-types-exclude", () => {
     await expect(desktopRow(typeN.name).getByText(badge)).toHaveCount(0);
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/protected/movement-types");
+    await page.goto("/protected/finance/movement-types");
     const mobileItem = (name: string) =>
       page.locator("ul > li").filter({ has: page.getByText(name, { exact: true }) });
 
@@ -170,15 +170,15 @@ test.describe("movement-types-exclude", () => {
 
     const checkboxName = "Excluir de los gráficos de gastos";
 
-    await page.goto(`/protected/movement-types/edit/${typeE.id}`);
+    await page.goto(`/protected/finance/movement-types/edit/${typeE.id}`);
     await expect(page.getByRole("checkbox", { name: checkboxName })).toBeChecked();
 
-    await page.goto(`/protected/movement-types/edit/${typeN.id}`);
+    await page.goto(`/protected/finance/movement-types/edit/${typeN.id}`);
     await expect(page.getByRole("checkbox", { name: checkboxName })).not.toBeChecked();
   });
 
   test("P.6 — alta: checkbox desmarcado con su texto de ayuda", async ({ page }) => {
-    await page.goto("/protected/movement-types/create");
+    await page.goto("/protected/finance/movement-types/create");
 
     await expect(
       page.getByRole("checkbox", { name: "Excluir de los gráficos de gastos" })
@@ -191,7 +191,7 @@ test.describe("movement-types-exclude", () => {
   });
 
   test("P.7 — los dos cards avisan qué tipos no incluyen", async ({ page }) => {
-    await page.goto(`/protected?accountId=${mainId}&dailyRange=7d`);
+    await page.goto(`/protected/finance?accountId=${mainId}&dailyRange=7d`);
 
     for (const title of ["Gastos por tipo", "Gastos diarios por tipo"]) {
       const description = card(page, title);

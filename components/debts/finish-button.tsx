@@ -38,7 +38,7 @@ export default function FinishButton({ debt }: Props) {
       return;
     }
 
-    await revalidatePathServer(`/protected/debts/${debt.id}`);
+    await revalidatePathServer(`/protected/finance/debts/${debt.id}`);
     router.refresh();
     setIsPending(false);
   };

@@ -39,11 +39,11 @@ function MovementActions({
   transferId: string | null;
 }) {
   const editHref = transferId
-    ? `/protected/transfers/edit/${transferId}`
-    : `/protected/movements/edit/${id}`;
+    ? `/protected/finance/transfers/edit/${transferId}`
+    : `/protected/finance/movements/edit/${id}`;
   const deleteHref = transferId
-    ? `/protected/transfers/delete/${transferId}`
-    : `/protected/movements/delete/${id}`;
+    ? `/protected/finance/transfers/delete/${transferId}`
+    : `/protected/finance/movements/delete/${id}`;
 
   return (
     <>
@@ -134,7 +134,7 @@ export default async function MovementsTable({
     }
 
     params.set("page", String(page));
-    return `/protected/movements?${params.toString()}`;
+    return `/protected/finance/movements?${params.toString()}`;
   };
 
   return (
@@ -152,7 +152,7 @@ export default async function MovementsTable({
             No hay movimientos en tu cuenta principal.{" "}
             <Link
               className="underline"
-              href={`/protected/movements?accountId=${allAccountsParam}`}
+              href={`/protected/finance/movements?accountId=${allAccountsParam}`}
             >
               Ver todas las cuentas
             </Link>
@@ -211,7 +211,7 @@ export default async function MovementsTable({
                       <div className="flex flex-col gap-1">
                         <NatureBadge movement={movement} />
                         {movement.debts && (
-                          <Link href={`/protected/debts/${movement.debts.id}`}>
+                          <Link href={`/protected/finance/debts/${movement.debts.id}`}>
                             <Badge
                               variant="outline"
                               className="max-w-40 truncate"
@@ -285,7 +285,7 @@ export default async function MovementsTable({
                             value: (
                               <Link
                                 className="underline"
-                                href={`/protected/debts/${movement.debts.id}`}
+                                href={`/protected/finance/debts/${movement.debts.id}`}
                               >
                                 {movement.debts.name}
                               </Link>

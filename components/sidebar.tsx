@@ -4,13 +4,16 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { isNavItemActive, navItems } from "@/lib/nav-items";
+import { getSidebarItems, isNavItemActive } from "@/lib/apps/registry";
 import { ChevronLeft } from "lucide-react";
 import AppLogo from "@/components/app-logo";
+import AppIcon from "@/components/apps/app-icon";
+import AppSwitcher from "@/components/apps/app-switcher";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(true);
+  const { items, basePath } = getSidebarItems(pathname);
 
   return (
     <aside
@@ -21,7 +24,7 @@ export default function Sidebar() {
     >
       <div className="h-full flex flex-col">
         <div className="flex items-center justify-between p-3 border-b border-b-foreground/10">
-          <div className="flex items-center gap-2 min-w-0">
+          <Link href="/protected" className="flex items-center gap-2 min-w-0">
             <div className="ml-1">
               <AppLogo size={open ? 28 : 24} />
             </div>
@@ -31,9 +34,9 @@ export default function Sidebar() {
                 open ? "mx-auto" : "sr-only"
               )}
             >
-              OwnMonetaryApp
+              OwnWorld
             </span>
-          </div>
+          </Link>
 
           <button
             aria-label={open ? "Cerrar sidebar" : "Abrir sidebar"}
@@ -44,11 +47,12 @@ export default function Sidebar() {
           </button>
         </div>
 
+        <AppSwitcher collapsed={!open} />
+
         <nav className="flex-1 overflow-auto py-2">
           <ul className="space-y-1 p-2">
-            {navItems.map((item) => {
-              const active = isNavItemActive(pathname, item.href);
-              const Icon = item.icon;
+            {items.map((item) => {
+              const active = isNavItemActive(pathname, item.href, basePath);
 
               return (
                 <li key={item.href}>
@@ -66,7 +70,7 @@ export default function Sidebar() {
                         open ? "" : "mx-auto"
                       )}
                     >
-                      <Icon className="w-5 h-5" />
+                      <AppIcon icon={item.icon} logo={item.logo} size={20} />
                     </span>
                     {open && <span className="truncate">{item.label}</span>}
                   </Link>

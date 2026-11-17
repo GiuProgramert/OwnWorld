@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { qaSupabase, uniqueName } from "./helpers/supabase";
 
 const TRANSFER_TYPE_ID = "e7f1b48a-be01-48a5-9982-5a4d4025493c";
-const CREATE = "/protected/movements/create";
+const CREATE = "/protected/finance/movements/create";
 
 const formatGs = (amount: number) => `Gs. ${amount.toLocaleString("es-PY")}`;
 const amountField = (page: Page) => page.getByLabel("Monto");
@@ -40,7 +40,7 @@ test.describe("calculadora en el campo de monto", () => {
     await expect(page.getByText("= 30.000", { exact: true })).toBeVisible();
     await amountField(page).press("Enter");
     await expect(amountField(page)).toHaveValue("30.000");
-    await expect(page).toHaveURL(/\/protected\/movements\/create/);
+    await expect(page).toHaveURL(/\/protected\/finance\/movements\/create/);
     await expect(page.getByText("La descripción es requerida")).toHaveCount(0);
     await expect(btn(page, "Sumar")).toHaveCount(0);
   });
@@ -84,7 +84,7 @@ test.describe("calculadora en el campo de monto", () => {
       await expect(amountField(page), expr).toHaveValue(
         "=" + expr.slice(1).replace(/\d+/g, (d) => Number(d).toLocaleString("es-PY"))
       );
-      await expect(page).toHaveURL(/\/protected\/movements\/create/);
+      await expect(page).toHaveURL(/\/protected\/finance\/movements\/create/);
       await typeKeys(page, "1");
       await expect(page.getByText(message, { exact: true }), expr).toHaveCount(0);
     }
@@ -284,9 +284,9 @@ test.describe("calculadora en el campo de monto", () => {
       await fillBasics(page, description);
       await typeKeys(page, "=20000+10000");
       await btn(page, "Crear").click();
-      await expect(page).toHaveURL(/\/protected\/movements(\?|$)/);
+      await expect(page).toHaveURL(/\/protected\/finance\/movements(\?|$)/);
 
-      await page.goto(`/protected/movements?accountId=${accountId}`);
+      await page.goto(`/protected/finance/movements?accountId=${accountId}`);
       const row = page.getByRole("row").filter({ hasText: description });
       await expect(row).toContainText(formatGs(30000));
 
@@ -295,7 +295,7 @@ test.describe("calculadora en el campo de monto", () => {
         .select("id")
         .eq("description", description)
         .single();
-      await page.goto(`/protected/movements/edit/${data!.id}`);
+      await page.goto(`/protected/finance/movements/edit/${data!.id}`);
       await expect(amountField(page)).toHaveValue("30.000");
       await amountField(page).focus();
       await amountField(page).press("End");
@@ -303,9 +303,9 @@ test.describe("calculadora en el campo de monto", () => {
       await amountField(page).press("Enter");
       await expect(amountField(page)).toHaveValue("35.000");
       await btn(page, "Guardar").click();
-      await expect(page).toHaveURL(/\/protected\/movements(\?|$)/);
+      await expect(page).toHaveURL(/\/protected\/finance\/movements(\?|$)/);
 
-      await page.goto(`/protected/movements?accountId=${accountId}`);
+      await page.goto(`/protected/finance/movements?accountId=${accountId}`);
       await expect(page.getByRole("row").filter({ hasText: description })).toContainText(
         formatGs(35000)
       );
@@ -319,7 +319,7 @@ test.describe("calculadora en el campo de monto", () => {
       await fillBasics(page, description);
       await typeKeys(page, "=20000+");
       await btn(page, "Crear").click();
-      await expect(page).toHaveURL(/\/protected\/movements\/create/);
+      await expect(page).toHaveURL(/\/protected\/finance\/movements\/create/);
       await expect(
         page.getByText("El monto debe ser un número entero positivo")
       ).toBeVisible();
@@ -333,7 +333,7 @@ test.describe("calculadora en el campo de monto", () => {
       await typeKeys(page, "=20000+10000");
       await amountField(page).press("Enter");
       await btn(page, "Crear y agregar otro").click();
-      await expect(page).toHaveURL(/\/protected\/movements\/create/);
+      await expect(page).toHaveURL(/\/protected\/finance\/movements\/create/);
       await expect(amountField(page)).toHaveValue("");
       await typeKeys(page, "5000");
       await expect(amountField(page)).toHaveValue("5.000");
@@ -347,19 +347,19 @@ test.describe("calculadora en el campo de monto", () => {
           return data?.map((m) => Number(m.amount));
         })
         .toEqual([30000]);
-      await page.goto(`/protected/movements?accountId=${accountId}`);
+      await page.goto(`/protected/finance/movements?accountId=${accountId}`);
       await expect(page.getByRole("row").filter({ hasText: description })).toContainText(
         formatGs(30000)
       );
     });
 
     test("P.12 — pago de deuda fija deshabilitado y variable con +5000", async ({ page }) => {
-      await page.goto(`/protected/debts/${fixedDebtId}/pay`);
+      await page.goto(`/protected/finance/debts/${fixedDebtId}/pay`);
       await expect(page.locator("#amount")).toBeDisabled();
       await expect(page.locator("#amount")).toHaveValue("50.000");
       await expect(btn(page, "Calculadora")).toBeDisabled();
 
-      await page.goto(`/protected/debts/${variableDebtId}/pay`);
+      await page.goto(`/protected/finance/debts/${variableDebtId}/pay`);
       const amount = page.locator("#amount");
       await expect(amount).toHaveValue("50.000");
       await amount.focus();
@@ -367,15 +367,15 @@ test.describe("calculadora en el campo de monto", () => {
       await amount.pressSequentially("+5000");
       await amount.press("Enter");
       await expect(amount).toHaveValue("55.000");
-      await expect(page).toHaveURL(new RegExp(`/protected/debts/${variableDebtId}/pay`));
+      await expect(page).toHaveURL(new RegExp(`/protected/finance/debts/${variableDebtId}/pay`));
     });
   });
 
   test("P.11 — otros módulos y layout sin saltos", async ({ page }) => {
     for (const path of [
-      "/protected/budgets/create",
-      "/protected/transfers/create",
-      "/protected/debts/create",
+      "/protected/finance/budgets/create",
+      "/protected/finance/transfers/create",
+      "/protected/finance/debts/create",
     ]) {
       await page.goto(path);
       const amount = page.locator("#amount");

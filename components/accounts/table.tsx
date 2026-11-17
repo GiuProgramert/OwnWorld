@@ -15,18 +15,18 @@ import { Pencil, TrashIcon } from "lucide-react";
 function AccountActions({ id }: { id: string }) {
   return (
     <>
-      {/* TODO: link "ver movimientos" a /protected/movements?accountId=... */}
+      {/* TODO: link "ver movimientos" a /protected/finance/movements?accountId=... */}
       <Link
         aria-label="Editar cuenta"
         className="flex justify-center items-center rounded-md hover:bg-blue-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/accounts/edit/${id}`}
+        href={`/protected/finance/accounts/edit/${id}`}
       >
         <Pencil className="h-6 w-6" />
       </Link>
       <Link
         aria-label="Eliminar cuenta"
         className="flex justify-center items-center rounded-md hover:bg-red-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/accounts/delete/${id}`}
+        href={`/protected/finance/accounts/delete/${id}`}
       >
         <TrashIcon className="h-6 w-6" />
       </Link>

@@ -26,7 +26,7 @@ export default function CreateAccountForm() {
 
   const onSubmit = async (data: z.infer<typeof accountSchema>) => {
     await createAccount(data);
-    revalidateMyDataAndRedirect("/protected/accounts");
+    revalidateMyDataAndRedirect("/protected/finance/accounts");
   };
 
   return (

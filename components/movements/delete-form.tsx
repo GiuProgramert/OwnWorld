@@ -24,7 +24,7 @@ export default function DeleteMovementForm({
       return;
     }
 
-    await revalidateMyDataAndRedirect("/protected/movements");
+    await revalidateMyDataAndRedirect("/protected/finance/movements");
   };
 
   return (

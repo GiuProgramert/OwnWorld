@@ -33,7 +33,7 @@ export default function EditAccountForm({ initialValues }: Props) {
 
   const onSubmit = async (data: z.infer<typeof accountSchema>) => {
     await updateAccount(initialValues.id, data);
-    revalidateMyDataAndRedirect("/protected/accounts");
+    revalidateMyDataAndRedirect("/protected/finance/accounts");
   };
 
   return (

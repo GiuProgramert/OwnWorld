@@ -4,7 +4,7 @@ Este archivo orienta a Claude Code (claude.ai/code) al trabajar con el código d
 
 ## Descripción del proyecto
 
-App de finanzas personales construida sobre el starter kit de Next.js + Supabase (App Router). Cada usuario administra sus cuentas (con saldo), tipos de movimiento (categorías de ingreso/egreso) y movimientos (transacciones), todo asociado a su usuario autenticado en Supabase. Todos los textos de la interfaz están en español.
+**OwnWorld** es una suite de apps personales estilo Odoo (lanzador de apps en `/protected` y un menú por app), construida sobre el starter kit de Next.js + Supabase (App Router); ver [`docs/suite-spec.md`](docs/suite-spec.md). Finanzas es la primera app y vive bajo `/protected/finance/**`: cada usuario administra sus cuentas (con saldo), tipos de movimiento (categorías de ingreso/egreso) y movimientos (transacciones), todo asociado a su usuario autenticado en Supabase. Todos los textos de la interfaz están en español.
 
 ## Comandos
 
@@ -34,8 +34,8 @@ Cada entidad del dominio sigue la misma estructura — al agregar una entidad o 
 - `lib/services/<entity>.ts` — lecturas **solo de servidor** (`createClient` de `lib/supabase/server`, usado desde Server Components/páginas). Siempre obtiene el usuario autenticado con `supabase.auth.getUser()` y acota las consultas con `.eq("user_id", ...)` en las tablas con dueño (accounts, movements). `movement_types` es una tabla compartida/global, sin filtro por usuario.
 - `lib/services/<entity>.client.ts` — mutaciones **solo de cliente** (`createClient` de `lib/supabase/client`, usado desde formularios `"use client"`). Vuelve a validar la entrada con el esquema Zod vía `safeParse` antes de llamar a Supabase, aunque el formulario ya la haya validado.
 - `components/<entity>/create-form.tsx`, `edit-form.tsx` (o `edit.form.tsx`), `delete-form.tsx`, `table.tsx` — formularios `"use client"` hechos con `react-hook-form` + `@hookform/resolvers/zod`; `table.tsx` es un Server Component asíncrono que llama directo al servicio de lectura y renderiza la `<Table>` de shadcn/ui.
-- `app/protected/<entity>/page.tsx` — página de listado; renderiza la tabla dentro de `<Suspense fallback={<TableSkeleton />}>`.
-- `app/protected/<entity>/create/page.tsx`, `edit/[id]/page.tsx`, `delete/[id]/page.tsx` — rutas mínimas que envuelven el formulario con el layout compartido `FormContainer`; las páginas de edición y borrado traen el registro en el servidor con `get<Entity>ById` y llaman a `notFound()` si no existe.
+- `app/protected/<app>/<entity>/page.tsx` (hoy `<app>` = `finance`, es decir `app/protected/finance/<entity>/...`) — página de listado; renderiza la tabla dentro de `<Suspense fallback={<TableSkeleton />}>`.
+- `app/protected/<app>/<entity>/create/page.tsx`, `edit/[id]/page.tsx`, `delete/[id]/page.tsx` — rutas mínimas que envuelven el formulario con el layout compartido `FormContainer`; las páginas de edición y borrado traen el registro en el servidor con `get<Entity>ById` y llaman a `notFound()` si no existe.
 
 Después de cualquier mutación en el cliente, los formularios llaman a `revalidateMyDataAndRedirect(path)` (`lib/services/revalidate.ts`, una acción `"use server"`) para revalidar la caché de la ruta del listado y redirigir de vuelta a ella — ese es el flujo estándar después de mutar, no `router.push` + refetch manual.
 
@@ -52,9 +52,9 @@ El esquema (tablas, índices, triggers, funciones, políticas RLS) está version
 
 ### Importación de extractos bancarios
 
-`app/protected/movements/import` permite subir un extracto bancario (hoy XLSX) y crear movimientos en lote sin duplicar una importación anterior. Ver [`docs/imports.md`](docs/imports.md) para el motor de adaptadores (`lib/imports/`), cómo agregar el formato de un banco nuevo y dónde suelen romperse los adaptadores. Todo el parseo corre en el cliente; esta funcionalidad no tiene Route Handler.
+`app/protected/finance/movements/import` permite subir un extracto bancario (hoy XLSX) y crear movimientos en lote sin duplicar una importación anterior. Ver [`docs/imports.md`](docs/imports.md) para el motor de adaptadores (`lib/imports/`), cómo agregar el formato de un banco nuevo y dónde suelen romperse los adaptadores. Todo el parseo corre en el cliente; esta funcionalidad no tiene Route Handler.
 
-### Dashboard (`app/protected/page.tsx`)
+### Dashboard (`app/protected/finance/page.tsx`)
 
 `lib/services/dashboard.ts` + `components/dashboard/` renderizan el dashboard de inicio:
 distribución del saldo entre cuentas, gastos por tipo de movimiento y flujo mensual de
@@ -110,16 +110,16 @@ para la URL y el `<AccountSelect>`).
 Igual que `startDate`/`endDate` en el dashboard, el valor resuelto viaja como **prop** a los
 filtros de cliente; no se vuelve a leer de la URL en el cliente, porque si no el select y la tabla
 se desincronizan. La principal es solo el valor inicial del alta de movimientos: "Crear" redirige a
-`/protected/movements?accountId=<cuenta del movimiento creado>` y "Crear y agregar otro" conserva la
+`/protected/finance/movements?accountId=<cuenta del movimiento creado>` y "Crear y agregar otro" conserva la
 cuenta que eligió el usuario. Puede haber varias cuentas principales (ver
 [`docs/database.md`](docs/database.md#cuenta-principal-accountsis_primary)); se usa la primera por
 nombre.
 
-### Presupuestos (`app/protected/budgets`)
+### Presupuestos (`app/protected/finance/budgets`)
 
 Tope de gasto mensual por tipo de movimiento. Estructura: `lib/schemas/budgets.ts`,
 `lib/services/budgets.ts` (servidor) / `budgets.client.ts` (mutaciones), `lib/budgets/month.ts`
-(helpers de mes en hora local), `components/budgets/`, `app/protected/budgets/**` (incluye `[id]` =
+(helpers de mes en hora local), `components/budgets/`, `app/protected/finance/budgets/**` (incluye `[id]` =
 histórico). Tablas `budgets` (configuración) y `budget_periods` (tope de cada mes), más las RPC
 `ensure_budget_periods`, `get_budget_status` y `get_budget_history`; ver
 [`docs/database.md`](docs/database.md#presupuestos-mensuales).
@@ -130,13 +130,13 @@ siempre el mes calendario (`?month=YYYY-MM`): no usa `DateRangeFilter` ni `resol
 `getBudgetStatus`, `ensure_budget_periods` corre antes que `get_budget_status` y escribe durante el
 render, así que esa lectura no se cachea.
 
-### Transferencias (`app/protected/transfers`)
+### Transferencias (`app/protected/finance/transfers`)
 
 Traspaso entre dos cuentas propias: dos filas de `movements` apareadas por `transfer_id`, escritas
 solo por las RPC `create_transfer` / `update_transfer` / `delete_transfer`
 (`lib/services/transfers.client.ts`); ningún componente inserta filas de `movements` para una
 transferencia. Estructura: `lib/schemas/transfers.ts`, `lib/services/transfers{,.client}.ts`,
-`components/transfers/`, `app/protected/transfers/{create,edit/[id],delete/[id]}` (el `[id]` es el
+`components/transfers/`, `app/protected/finance/transfers/{create,edit/[id],delete/[id]}` (el `[id]` es el
 `transfer_id`). Sin listado ni ítem en el sidebar: viven dentro de movimientos. Ver
 [`docs/database.md`](docs/database.md#transferencias-entre-cuentas).
 
@@ -146,13 +146,13 @@ transferencia. Estructura: `lib/schemas/transfers.ts`, `lib/services/transfers{,
 el dueño (UUID literal en la política), y el tipo `Transferencia` (`transferMovementTypeId`) no se
 ofrece en selects ni se edita/borra.
 
-### Deudas (`app/protected/debts`)
+### Deudas (`app/protected/finance/debts`)
 
 Servicios (sin fin definido) y pagos en cuotas: cada pago es un movimiento `debit` normal vinculado
 por `movements.debt_id` (`ON DELETE SET NULL`, así que borrar una deuda no borra sus movimientos).
 Estructura: `lib/schemas/debts.ts`, `lib/services/debts.ts` (servidor) / `debts.client.ts`
 (mutaciones), `lib/debts/due.ts` (helpers de vencimiento en hora local), `components/debts/`,
-`app/protected/debts/**` (incluye `[id]` = detalle y `[id]/pay` = alta de pago). Tabla `debts` más
+`app/protected/finance/debts/**` (incluye `[id]` = detalle y `[id]/pay` = alta de pago). Tabla `debts` más
 las RPC `get_debts_status` y `create_debt_payment`; ver
 [`docs/database.md`](docs/database.md#deudas). Plan de origen:
 `docs/plans/debts-implementation.md`.
@@ -163,9 +163,9 @@ valida deuda y cuenta, y copia el `movement_type_id` de la deuda); nunca inserta
 leer en `get_debts_status`, nunca se guardan ni se escriben desde la app (mismo problema que
 `accounts.current_balance` y los presupuestos). (3) **No agregar `debt_id` a `movementSchema`**:
 como `updateMovement` hace `.update(parsed.data)`, un `debt_id` con valor por defecto `null` en el
-esquema desvincularía en silencio el pago al editarlo desde `/protected/movements`.
+esquema desvincularía en silencio el pago al editarlo desde `/protected/finance/movements`.
 
-`components/mobile-nav.tsx` usa `NavItem.mobilePinned` para elegir los 4 ítems fijos de la barra
+`components/mobile-nav.tsx` usa `NavItem.mobilePinned` (definido por app en `lib/apps/registry.ts`) para elegir los 4 ítems fijos de la barra
 inferior flotante; el resto (hoy: Tipos de movimientos y Deudas) va al botón "Menú", un
 `DropdownMenu` con una grilla de 3 columnas.
 
@@ -183,6 +183,19 @@ sin él el orden entre filas con la misma fecha es arbitrario y `.range()` repit
 (3) valores por defecto, valores de `datetime-local` y formato se calculan en hora local con
 `lib/movements/datetime.ts`, nunca con `toISOString()`. Ver
 [`docs/database.md`](docs/database.md#movementsdate-fecha-y-hora).
+
+### Apps y navegación (`lib/apps/registry.ts`)
+
+`/protected` es el **lanzador** de apps (`app/protected/page.tsx`, `components/apps/app-launcher.tsx`);
+cada app vive bajo `/protected/<id>/**`. `lib/apps/registry.ts` declara `apps[]` (`AppDefinition`:
+`id`, `name`, `icon`, `color`, `logo?`, `basePath`, `navItems`), `getCurrentApp(pathname)` (la app cuyo
+`basePath` es prefijo del pathname) y `getSidebarItems(pathname)` (ítems de la app actual, o las apps
+en el lanzador); `isNavItemActive(pathname, href, basePath)` trata el `basePath` como match exacto.
+`components/sidebar.tsx` y `components/mobile-nav.tsx` salen de ahí (la barra móvil no se muestra
+en el lanzador) y `components/apps/app-switcher.tsx` cambia de app. **Agregar una app** = una entrada
+más en `apps` + una carpeta `app/protected/<id>/`; los slugs van en inglés y los textos en español.
+`logo` (opcional) es la ruta a una imagen de `public/` que reemplaza al `icon` lucide en todos los lugares donde se muestra la app (`components/apps/app-icon.tsx`); hoy finanzas, cuyo nombre visible es "OwnMonetaryApp", usa `/apps/finance/logo.svg` (el isotipo "M" original; el isotipo de OwnWorld es `public/icon.svg`). `mobilePinned` es por app. Los `redirects()` de `next.config.ts` existen solo para URLs viejas
+(marcadores, PWA): ningún link interno puede depender de ellos.
 
 ### Autenticación y clientes de Supabase
 

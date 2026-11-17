@@ -72,7 +72,7 @@ español.
 ```ts
 export interface AppDefinition {
   id: "finance" | "calendar" | "reminders";
-  name: string;            // "Finanzas"
+  name: string;            // "OwnMonetaryApp"
   description: string;     // texto del tile en el lanzador
   icon: LucideIcon;
   color: string;           // hex, fondo del tile
@@ -134,7 +134,7 @@ anterior.
 
 | Fase | Contenido | Criterio de cierre |
 | --- | --- | --- |
-| **0. Shell de suite** | `lib/apps/registry.ts`; lanzador en `/protected`; mover finanzas a `/protected/finance/**` con `redirects()` desde las rutas viejas; sidebar y barra móvil por app con `AppSwitcher`; actualizar e2e y `CLAUDE.md`. **Sin cambios funcionales en finanzas.** Plan: `docs/plans/suite-shell-implementation.md`. | `build`, `lint` y `test:e2e` en verde; las URLs viejas redirigen. |
+| **0. Shell de suite** | `lib/apps/registry.ts`; lanzador en `/protected`; mover finanzas a `/protected/finance/**` con `redirects()` desde las rutas viejas; sidebar y barra móvil por app con `AppSwitcher`; actualizar e2e y `CLAUDE.md`. **Sin cambios funcionales en finanzas.** Plan: `docs/plans/suite-shell-implementation.md`. **Estado: implementada** (ver `docs/plans/suite-shell-implementation.md`). | `build`, `lint` y `test:e2e` en verde; las URLs viejas redirigen. |
 | **1. Calendario** | App `/protected/calendar`. | Se define en su plan. |
 | **2. Recordatorios** | App `/protected/reminders` con avisos por Telegram, y `/protected/settings`. | Se define en su plan. |
 | **3. Integración con Finanzas** | Vencimientos de deudas en el calendario y avisos de vencimientos. | Se define en su plan. |
@@ -145,7 +145,7 @@ anterior.
 ## Decisiones de nombre
 
 - **Nombre de la suite: OwnWorld.** Reemplaza a "OwnMonetaryApp" en el sidebar, `app/manifest.ts`
-  y los `<title>`. La app de finanzas se llama "Finanzas" dentro de la suite.
+  y los `<title>`. La app de finanzas se llama "OwnMonetaryApp" dentro de la suite en el registro.
 - **Slugs de rutas en inglés** (`/protected/finance`, `/protected/calendar`,
   `/protected/reminders`, `/protected/settings`), como los actuales. Los textos visibles siguen en
   español.

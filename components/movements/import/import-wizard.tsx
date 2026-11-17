@@ -240,7 +240,7 @@ export default function ImportWizard({ accounts, movementTypes }: Props) {
       return;
     }
 
-    await revalidateMyDataAndRedirect("/protected/movements");
+    await revalidateMyDataAndRedirect("/protected/finance/movements");
   };
 
   if (step === "format-error" && formatCheck && selectedAdapter) {

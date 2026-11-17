@@ -47,7 +47,7 @@ export default function EditTransferForm({ initialValues, accounts }: Props) {
       return;
     }
 
-    await revalidateMyDataAndRedirect("/protected/movements");
+    await revalidateMyDataAndRedirect("/protected/finance/movements");
   };
 
   return (

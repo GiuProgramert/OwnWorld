@@ -100,7 +100,7 @@ test.describe("dashboard", () => {
   });
 
   test("el sidebar queda fijo al scrollear el contenido", async ({ page }) => {
-    await page.goto(`/protected?accountId=${accountIds[0]}`);
+    await page.goto(`/protected/finance?accountId=${accountIds[0]}`);
     const sidebar = page.locator("aside");
     const before = await sidebar.boundingBox();
 
@@ -111,7 +111,7 @@ test.describe("dashboard", () => {
   });
 
   test("el tooltip del donut se dibuja por encima del total del centro", async ({ page }) => {
-    await page.goto(`/protected?accountId=${accountIds[0]}`);
+    await page.goto(`/protected/finance?accountId=${accountIds[0]}`);
     const donut = card(page, "Distribución del saldo actual");
     const chart = donut.locator(".recharts-wrapper");
     const tooltip = chart.locator(".recharts-tooltip-wrapper");
@@ -150,7 +150,7 @@ test.describe("dashboard", () => {
   test("el tooltip de gastos diarios muestra el día y el tipo del segmento bajo el cursor", async ({
     page,
   }) => {
-    await page.goto(`/protected?accountId=${accountIds[0]}&dailyRange=7d`);
+    await page.goto(`/protected/finance?accountId=${accountIds[0]}&dailyRange=7d`);
     const daily = card(page, "Gastos diarios por tipo");
     const tooltip = daily.locator(".recharts-tooltip-wrapper");
 

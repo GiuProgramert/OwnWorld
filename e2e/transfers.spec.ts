@@ -4,7 +4,7 @@ import { qaSupabase, uniqueName } from "./helpers/supabase";
 
 const formatGs = (amount: number) => `Gs. ${amount.toLocaleString("es-PY")}`;
 
-// Card de totales de /protected/movements: CardTitle → CardHeader → Card.
+// Card de totales de /protected/finance/movements: CardTitle → CardHeader → Card.
 const totalCard = (page: Page, title: string) =>
   page.getByText(title, { exact: true }).locator("xpath=../..");
 
@@ -42,7 +42,7 @@ test.describe("transferencias", () => {
   }) => {
     const [fromId, toId] = accountIds;
 
-    await page.goto("/protected/transfers/create");
+    await page.goto("/protected/finance/transfers/create");
     await page.getByLabel("Descripción").fill(uniqueName("transfers"));
     await page.getByLabel("Monto").fill(String(amount));
     await page.getByLabel("Cuenta de origen").click();
@@ -50,15 +50,15 @@ test.describe("transferencias", () => {
     await page.getByLabel("Cuenta de destino").click();
     await page.getByRole("option", { name: toName }).click();
     await page.getByRole("button", { name: "Crear" }).click();
-    await expect(page).toHaveURL(/\/protected\/movements/);
+    await expect(page).toHaveURL(/\/protected\/finance\/movements/);
 
     // La transferencia se crea con fecha de ahora: cae en el mes actual, el rango por defecto.
-    await page.goto(`/protected/movements?accountId=${fromId}`);
+    await page.goto(`/protected/finance/movements?accountId=${fromId}`);
     await expect(totalCard(page, "Ingresos")).toContainText(formatGs(0));
     await expect(totalCard(page, "Egresos")).toContainText(formatGs(amount));
     await expect(totalCard(page, "Balance neto")).toContainText(formatGs(-amount));
 
-    await page.goto(`/protected/movements?accountId=${toId}`);
+    await page.goto(`/protected/finance/movements?accountId=${toId}`);
     await expect(totalCard(page, "Ingresos")).toContainText(formatGs(amount));
     await expect(totalCard(page, "Egresos")).toContainText(formatGs(0));
     await expect(totalCard(page, "Balance neto")).toContainText(formatGs(amount));

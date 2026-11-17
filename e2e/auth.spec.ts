@@ -11,7 +11,7 @@ test.describe("sin sesión", () => {
     await loginAs(page, email, password);
 
     await expect(page).toHaveURL(/\/protected/);
-    await expect(page.getByText("OwnMonetaryApp")).toBeVisible();
+    await expect(page.getByText("OwnWorld")).toBeVisible();
   });
 
   test("contraseña incorrecta muestra el error y no entra", async ({ page }) => {
@@ -36,5 +36,5 @@ test("con la sesión guardada del usuario QA, /protected carga sin pasar por el 
   await page.goto("/protected");
 
   await expect(page).toHaveURL(/\/protected/);
-  await expect(page.getByText("OwnMonetaryApp")).toBeVisible();
+  await expect(page.getByText("OwnWorld")).toBeVisible();
 });

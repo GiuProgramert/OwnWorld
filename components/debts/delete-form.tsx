@@ -29,7 +29,7 @@ export default function DeleteDebtForm({ initialValues }: Props) {
       return;
     }
 
-    await revalidateMyDataAndRedirect("/protected/debts");
+    await revalidateMyDataAndRedirect("/protected/finance/debts");
   };
 
   return (

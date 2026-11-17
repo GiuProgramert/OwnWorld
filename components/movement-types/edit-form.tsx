@@ -26,7 +26,7 @@ export default function EditMovementTypeForm({ initialValues }: Props) {
 
   const onSubmit = async (data: z.infer<typeof movementTypeSchema>) => {
     await updateMovementType(initialValues.id, data);
-    revalidateMyDataAndRedirect("/protected/movement-types");
+    revalidateMyDataAndRedirect("/protected/finance/movement-types");
   };
 
   return (

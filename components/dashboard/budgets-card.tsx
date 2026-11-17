@@ -29,7 +29,7 @@ export default async function BudgetsCard() {
           </p>
         </div>
         <Link
-          href="/protected/budgets"
+          href="/protected/finance/budgets"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           Ver todos
@@ -40,7 +40,7 @@ export default async function BudgetsCard() {
           <p className="text-sm text-muted-foreground">
             No hay presupuestos configurados aún.{" "}
             <Link
-              href="/protected/budgets/create"
+              href="/protected/finance/budgets/create"
               className="underline hover:text-foreground"
             >
               Crear uno

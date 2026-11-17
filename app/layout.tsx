@@ -9,11 +9,11 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "OwnMonetaryApp",
+  title: "OwnWorld",
   description: "Control de cuentas, movimientos y presupuestos personales.",
   appleWebApp: {
     capable: true,
-    title: "OwnMonetary",
+    title: "OwnWorld",
     statusBarStyle: "black-translucent",
   },
 };

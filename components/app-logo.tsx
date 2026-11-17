@@ -19,14 +19,14 @@ export default function AppLogo({
     <span className={cn("flex items-center gap-2 min-w-0", className)}>
       <Image
         src="/icon.svg"
-        alt="OwnMonetaryApp"
+        alt="OwnWorld"
         width={size}
         height={size}
         priority
         className="shrink-0"
       />
       {showWordmark && (
-        <span className="font-semibold truncate">OwnMonetaryApp</span>
+        <span className="font-semibold truncate">OwnWorld</span>
       )}
     </span>
   );

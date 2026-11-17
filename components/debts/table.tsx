@@ -44,7 +44,7 @@ function DebtActions({ debt }: { debt: DebtStatus }) {
       <Link
         aria-label="Ver deuda"
         className="flex justify-center items-center rounded-md hover:bg-green-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/debts/${debt.id}`}
+        href={`/protected/finance/debts/${debt.id}`}
       >
         <Eye className="h-6 w-6" />
       </Link>
@@ -52,7 +52,7 @@ function DebtActions({ debt }: { debt: DebtStatus }) {
         <Link
           aria-label="Pagar deuda"
           className="flex justify-center items-center rounded-md hover:bg-emerald-500 hover:text-white transition-colors duration-300 h-10 w-10"
-          href={withReturnTo(`/protected/debts/${debt.id}/pay`, "/protected/debts")}
+          href={withReturnTo(`/protected/finance/debts/${debt.id}/pay`, "/protected/finance/debts")}
         >
           <CircleDollarSign className="h-6 w-6" />
         </Link>
@@ -60,14 +60,14 @@ function DebtActions({ debt }: { debt: DebtStatus }) {
       <Link
         aria-label="Editar deuda"
         className="flex justify-center items-center rounded-md hover:bg-blue-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={withReturnTo(`/protected/debts/edit/${debt.id}`, "/protected/debts")}
+        href={withReturnTo(`/protected/finance/debts/edit/${debt.id}`, "/protected/finance/debts")}
       >
         <Pencil className="h-6 w-6" />
       </Link>
       <Link
         aria-label="Eliminar deuda"
         className="flex justify-center items-center rounded-md hover:bg-red-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/debts/delete/${debt.id}`}
+        href={`/protected/finance/debts/delete/${debt.id}`}
       >
         <TrashIcon className="h-6 w-6" />
       </Link>
@@ -82,7 +82,7 @@ export default async function DebtsTable() {
     return (
       <p className="text-sm text-muted-foreground">
         No hay deudas cargadas aún.{" "}
-        <Link href="/protected/debts/create" className="underline">
+        <Link href="/protected/finance/debts/create" className="underline">
           Crear una
         </Link>
         .

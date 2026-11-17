@@ -51,7 +51,7 @@ export default function EditBudgetForm({ initialValues, movementTypes }: Props) 
       return;
     }
 
-    await revalidateMyDataAndRedirect("/protected/budgets");
+    await revalidateMyDataAndRedirect("/protected/finance/budgets");
   };
 
   return (

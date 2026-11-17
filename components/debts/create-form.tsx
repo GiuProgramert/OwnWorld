@@ -45,7 +45,7 @@ export default function CreateDebtForm({ movementTypes }: Props) {
       return;
     }
 
-    await revalidateMyDataAndRedirect("/protected/debts");
+    await revalidateMyDataAndRedirect("/protected/finance/debts");
   };
 
   return (

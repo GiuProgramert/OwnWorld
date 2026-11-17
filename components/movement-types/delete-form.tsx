@@ -14,7 +14,7 @@ export default function DeleteMovementTypeForm({ initialValues }: Props) {
 
   const onSubmit = async () => {
     await deleteMovementType(initialValues.id);
-    await revalidateMyDataAndRedirect("/protected/movement-types");
+    await revalidateMyDataAndRedirect("/protected/finance/movement-types");
   };
 
   return (

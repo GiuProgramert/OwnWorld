@@ -1,4 +1,4 @@
-/** File -> matriz de celdas. Import dinámico: `xlsx` no debe entrar al bundle inicial de /protected/movements. */
+/** File -> matriz de celdas. Import dinámico: `xlsx` no debe entrar al bundle inicial de /protected/finance/movements. */
 export async function readXlsxMatrix(file: File): Promise<unknown[][]> {
   const XLSX = await import("xlsx");
   const buffer = await file.arrayBuffer();

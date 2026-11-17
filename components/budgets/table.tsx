@@ -24,21 +24,21 @@ function BudgetActions({ id }: { id: string }) {
       <Link
         aria-label="Ver histórico del presupuesto"
         className="flex justify-center items-center rounded-md hover:bg-green-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/budgets/${id}`}
+        href={`/protected/finance/budgets/${id}`}
       >
         <History className="h-6 w-6" />
       </Link>
       <Link
         aria-label="Editar presupuesto"
         className="flex justify-center items-center rounded-md hover:bg-blue-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/budgets/edit/${id}`}
+        href={`/protected/finance/budgets/edit/${id}`}
       >
         <Pencil className="h-6 w-6" />
       </Link>
       <Link
         aria-label="Eliminar presupuesto"
         className="flex justify-center items-center rounded-md hover:bg-red-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/budgets/delete/${id}`}
+        href={`/protected/finance/budgets/delete/${id}`}
       >
         <TrashIcon className="h-6 w-6" />
       </Link>

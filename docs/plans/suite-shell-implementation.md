@@ -1,7 +1,7 @@
 # Plan: shell de la suite OwnWorld (lanzador de apps y finanzas bajo /protected/finance)
 
 **Fecha:** 2026-11-16
-**Estado:** propuesto — nada implementado todavía
+**Estado:** implementado y verificado (2026-11-16) — ver *Notas de cierre*
 
 ## Objetivo
 
@@ -135,12 +135,12 @@ next.config.ts                 ← redirects() desde las rutas viejas
 Mover primero y actualizar los strings en la misma fase: entre 1.1 y 1.3 la app tiene links rotos y
 **no se hace commit en el medio**.
 
-- [ ] **1.1** Con `git mv` (para conservar el historial), mover `app/protected/{accounts,movements,
+- [x] **1.1** Con `git mv` (para conservar el historial), mover `app/protected/{accounts,movements,
   movement-types,budgets,debts,transfers}` a `app/protected/finance/` y `app/protected/page.tsx` a
   `app/protected/finance/page.tsx`. Renombrar el componente de la página del dashboard de
   `ProtectedPage` a `FinanceDashboardPage`. `app/protected/layout.tsx` y `app/protected/not-found.tsx`
   **no se mueven**.
-- [ ] **1.2** Reemplazar en `app/`, `components/` y `lib/` todo string `/protected/<segmento>` con
+- [x] **1.2** Reemplazar en `app/`, `components/` y `lib/` todo string `/protected/<segmento>` con
   `<segmento>` ∈ {`accounts`, `movements`, `movement-types`, `budgets`, `debts`, `transfers`} por
   `/protected/finance/<segmento>`. Incluye `href`, `router.push`, `revalidateMyDataAndRedirect`,
   `revalidatePathServer`, `withReturnTo` (los dos argumentos) y los comentarios
@@ -148,17 +148,17 @@ Mover primero y actualizar los strings en la misma fase: entre 1.1 y 1.3 la app 
   reemplazo por segmento completo (`/protected/movements` seguido de `/`, `?`, `` ` ``, `"` o fin
   de string), no por prefijo, para no producir `/protected/finance/finance/...` ni dejar uno sin
   cambiar. **No tocar `e2e/`**: lo actualiza el tester (P.8).
-- [ ] **1.3** Las referencias al **dashboard** (no al lanzador) pasan de `/protected` a
+- [x] **1.3** Las referencias al **dashboard** (no al lanzador) pasan de `/protected` a
   `/protected/finance`. Hoy es una sola: `components/dashboard/upcoming-debts-card.tsx`,
   `withReturnTo(..., "/protected")` → `"/protected/finance"` (después de pagar desde el dashboard se
   vuelve al dashboard, no al lanzador). Las de la restricción 6 **se quedan en `/protected`**.
-- [ ] **1.4** Verificación: `grep -rnE "/protected/(accounts|movements|movement-types|budgets|debts|transfers)" app components lib`
+- [x] **1.4** Verificación: `grep -rnE "/protected/(accounts|movements|movement-types|budgets|debts|transfers)" app components lib`
   no devuelve nada, y `grep -rn "/protected/finance/finance" app components lib` tampoco. Anotar el
   resultado de ambos comandos al marcar el punto.
 
 ## Fase 2 — Registro de apps
 
-- [ ] **2.1** Crear `lib/apps/registry.ts` con:
+- [x] **2.1** Crear `lib/apps/registry.ts` con:
   - `NavItem` (movido sin cambios desde `lib/nav-items.ts`, con sus comentarios).
   - `AppDefinition { id: "finance"; name: string; description: string; icon: LucideIcon;
     color: string; basePath: string; navItems: NavItem[] }`. El `id` es una unión de literales que
@@ -182,19 +182,19 @@ Mover primero y actualizar los strings en la misma fase: entre 1.1 y 1.3 la app 
 
   El archivo no importa nada de servidor: lo usan `sidebar.tsx` y `mobile-nav.tsx` (`"use client"`) y
   el lanzador (servidor).
-- [ ] **2.2** Borrar `lib/nav-items.ts` y actualizar sus dos imports (`components/sidebar.tsx`,
+- [x] **2.2** Borrar `lib/nav-items.ts` y actualizar sus dos imports (`components/sidebar.tsx`,
   `components/mobile-nav.tsx`). `grep -rn "nav-items" app components lib` no devuelve nada.
 
 ## Fase 3 — Lanzador y redirecciones
 
-- [ ] **3.1** `components/apps/app-launcher.tsx` (Server Component, sin props) y nuevo
+- [x] **3.1** `components/apps/app-launcher.tsx` (Server Component, sin props) y nuevo
   `app/protected/page.tsx` que lo renderiza bajo un `<h1>` "Apps". La página hace el mismo chequeo
   de sesión que el dashboard (`supabase.auth.getClaims()` → `redirect("/auth/login")`). Cada app de
   `apps` es un `<Link href={basePath}>` que envuelve un `<Card>` con: un cuadrado redondeado con
   fondo `color` y el `icon` en blanco, el `name` y la `description` en `text-muted-foreground`.
   Grilla `grid-cols-2` en móvil, `sm:grid-cols-3`, `lg:grid-cols-4`. El link tiene accesible el
   nombre de la app (el tester lo busca con `getByRole("link", { name: /Finanzas/ })`).
-- [ ] **3.2** `next.config.ts` — `async redirects()` con `permanent: false`:
+- [x] **3.2** `next.config.ts` — `async redirects()` con `permanent: false`:
   - Para cada segmento de 1.2: `{ source: "/protected/<segmento>/:path*", destination:
     "/protected/finance/<segmento>/:path*" }`. `:path*` también matchea cero segmentos, así que cubre
     el listado.
@@ -213,18 +213,18 @@ Mover primero y actualizar los strings en la misma fase: entre 1.1 y 1.3 la app 
 
 Las fases 4.1 y 4.2 dependen de 2.1; entre sí son independientes.
 
-- [ ] **4.1** `components/apps/app-switcher.tsx` (`"use client"`, prop `collapsed: boolean`):
+- [x] **4.1** `components/apps/app-switcher.tsx` (`"use client"`, prop `collapsed: boolean`):
   `DropdownMenu` cuyo trigger muestra el `icon` y el `name` de la app actual (solo el icono si
   `collapsed`) con `aria-label="Cambiar de app"`. El contenido tiene un ítem "Todas las apps" →
   `/protected` y un ítem por cada app de `apps` (icono + nombre, `asChild` + `Link` como en
   `mobile-nav.tsx`, para que el menú se cierre al navegar). Si no hay app actual, no renderiza nada.
-- [ ] **4.2** `components/sidebar.tsx`:
+- [x] **4.2** `components/sidebar.tsx`:
   - El texto "OwnMonetaryApp" pasa a "OwnWorld", y el bloque logo + nombre pasa a ser un
     `<Link href="/protected">` (volver al lanzador, como el logo de Odoo).
   - Debajo del header, `<AppSwitcher collapsed={!open} />`.
   - La lista sale de `getSidebarItems(pathname)` y el activo de
     `isNavItemActive(pathname, item.href, basePath)`. Markup y estilos de los ítems sin cambios.
-- [ ] **4.3** `components/mobile-nav.tsx`:
+- [x] **4.3** `components/mobile-nav.tsx`:
   - `const app = getCurrentApp(pathname)`; si es `undefined` (lanzador), `return null`.
   - `pinnedItems` / `menuItems` salen de `app.navItems` y el activo usa `app.basePath`.
   - En el `DropdownMenuContent`, debajo de la grilla "Más secciones", una segunda sección con el
@@ -235,18 +235,18 @@ Las fases 4.1 y 4.2 dependen de 2.1; entre sí son independientes.
 
 Independiente de las fases 2–4; se puede hacer en cualquier momento después de la 1.
 
-- [ ] **5.1** `app/layout.tsx`: `metadata.title` → `"OwnWorld"`, `openGraph.title` → `"OwnWorld"`.
-- [ ] **5.2** `app/manifest.ts`: `name` y `short_name` → `"OwnWorld"`, `description` →
+- [x] **5.1** `app/layout.tsx`: `metadata.title` → `"OwnWorld"`, `openGraph.title` → `"OwnWorld"`.
+- [x] **5.2** `app/manifest.ts`: `name` y `short_name` → `"OwnWorld"`, `description` →
   `"Tus apps personales: finanzas, y lo que venga."`. `start_url` y `scope` **no cambian** (ver el
   comentario del archivo sobre `scope`).
-- [ ] **5.3** `components/app-logo.tsx`: `alt` y wordmark → `"OwnWorld"`. El isotipo
+- [x] **5.3** `components/app-logo.tsx`: `alt` y wordmark → `"OwnWorld"`. El isotipo
   (`public/icon*.{svg,png}`) no cambia (ver *Fuera de alcance*).
 
 ## Fase 6 — Cierre
 
-- [ ] **6.1** `npm run lint` y `npm run build`. El build no detecta links rotos (restricción 1):
+- [x] **6.1** `npm run lint` y `npm run build`. El build no detecta links rotos (restricción 1):
   repetir los `grep` de 1.4 y 2.2 al final, por si algún punto posterior agregó una ruta vieja.
-- [ ] **6.2** `CLAUDE.md`:
+- [x] **6.2** `CLAUDE.md`:
   - "Descripción del proyecto": OwnWorld, suite de apps estilo Odoo, finanzas como primera app;
     link a `docs/suite-spec.md`.
   - "Patrón de módulo por entidad": las rutas pasan a `app/protected/<app>/<entity>/...` (hoy
@@ -260,13 +260,13 @@ Independiente de las fases 2–4; se puede hacer en cualquier momento después d
     `mobilePinned` es por app.
   - El párrafo de `components/mobile-nav.tsx` (`NavItem.mobilePinned`) apunta al registro en vez de
     a `lib/nav-items.ts`.
-- [ ] **6.3** `docs/database.md` e `docs/imports.md`: actualizar las rutas de pantallas
+- [x] **6.3** `docs/database.md` e `docs/imports.md`: actualizar las rutas de pantallas
   (`app/protected/page.tsx` → `app/protected/finance/page.tsx`, `/protected/movements` →
   `/protected/finance/movements`, etc.). **No** tocar `docs/plans/*-implementation.md`: son registros
   históricos de lo que se hizo en su fecha.
-- [ ] **6.4** `docs/suite-spec.md`, tabla de la hoja de ruta: fase 0 → "implementada (ver
+- [x] **6.4** `docs/suite-spec.md`, tabla de la hoja de ruta: fase 0 → "implementada (ver
   `docs/plans/suite-shell-implementation.md`)".
-- [ ] **6.5** Notas de cierre al final de este documento — *las escribe el orquestador al terminar
+- [x] **6.5** Notas de cierre al final de este documento — *las escribe el orquestador al terminar
   las pruebas, no el implementador.*
 
 ## Criterios de prueba
@@ -358,3 +358,119 @@ Ningún criterio necesita crear datos, salvo P.4 y P.5, que crean una cuenta pro
 - **Marcadores con el dashboard y un parámetro que no está en la lista de 3.2** (si se agrega uno
   nuevo al dashboard más adelante) caen en el lanzador en vez del dashboard. Es aceptable; al
   agregar un parámetro nuevo al dashboard no hace falta sumarle redirección.
+
+## Registro de ejecución
+
+**Inicio:** 2026-11-16
+
+- **Paso 0** — `.env.local` no existe en el checkout (ni ningún otro `.env*`). La implementación no
+  depende de él; el tester sí (Supabase + credenciales del QA). Se avisa al usuario y se lanza el
+  implementador mientras tanto. `git status` limpio.
+- **Ronda 1 (implementador)** — La sesión se cortó con el implementador a medio trabajar: la 1.1
+  (`git mv`) estaba aplicada y había cambios parciales en componentes, nombre (fase 5) y
+  `mobile-nav.tsx`, sin ningún `[x]`. El usuario restauró `.env.local` (QA_EMAIL/QA_PASSWORD
+  presentes). Se reanuda el mismo implementador, que tiene que verificar el estado parcial antes
+  de seguir.
+- **Ronda 1 (implementador), cierre** — Hechos 1.1–6.4 (verificados los `[x]`). `npm run lint` y
+  `npm run build` OK. Los `grep` de 1.4, 2.2 y el de concatenación (`'"/protected/"'`) vuelven
+  vacíos (reverificados por el orquestador). Desvíos declarados: en 6.4 el estado "implementada" se
+  escribió en la celda de contenido de la fila de la fase 0 de `docs/suite-spec.md`, no en
+  "Criterio de cierre"; un `npm install` previo había cambiado `name` en `package-lock.json` y se
+  revirtió. Sin bloqueos.
+- **Ronda 1 (tester)** — Se lanza con P.1–P.8.
+- **Ronda 1 (tester), cierre** — P.1–P.8 pasan; verificación manual de manifest y `og:title` OK.
+  Sin incidencias. `npm run test:e2e`: 36 pasan, 0 fallan.
+
+- **C-1** (pedido del usuario, textual): "me gustaría que en vez de Finanzas se llame
+  OwnMonetaryApp y que pueda configurar su propio logo, usa el mismo de momento" (con captura del
+  sidebar en `/protected/finance`, donde el `AppSwitcher` muestra el icono `Wallet` + "Finanzas").
+  Interpretación del orquestador: `name` de la app → "OwnMonetaryApp"; `AppDefinition` gana un
+  campo de logo (ruta de imagen) que, si está, reemplaza al icono lucide donde se representa a la
+  app (tile del lanzador, `AppSwitcher`, ítem del sidebar en el lanzador, sección "Apps" del menú
+  móvil); por ahora apunta al mismo isotipo que `AppLogo` (`/icon.svg`). El usuario aclaró que **no
+  contradice** la decisión de textos visibles en español: "OwnMonetaryApp" es el nombre propio de
+  la app (como se ve en el selector de app del sidebar), no un texto de interfaz; los ítems de su
+  menú siguen en español.
+
+- **C-1 (implementador)** — `name` → "OwnMonetaryApp"; `logo?: string` en `AppDefinition` y
+  `NavItem` (finance → `/icon.svg`); nuevo `components/apps/app-icon.tsx` (logo con `next/image` o
+  icono lucide de fallback) usado en lanzador, `AppSwitcher`, sidebar del lanzador y menú móvil.
+  En el lanzador el logo ocupa el lugar del cuadrado de color (64px). `CLAUDE.md` y
+  `docs/suite-spec.md` actualizados. Build OK; **lint falla en `e2e/suite-shell.spec.ts:98`**
+  (`_ignored` sin usar, archivo del tester de la ronda 1, no detectado entonces) → incidencia
+  **I-1** al tester junto con la verificación de C-1.
+
+- **C-1 (tester)** — C-1 verificado en el navegador y cubierto por el test `C-1 — …` en
+  `e2e/suite-shell.spec.ts`; P.1, P.2, P.3 y P.7 actualizados a "OwnMonetaryApp". **I-1**
+  resuelta (1 ronda): `npm run lint` limpio, sin desactivar la regla. `npm run test:e2e`: 37
+  pasan, 0 fallan.
+
+- **C-2** (pedido del usuario, textual): "ajusta los logos de OwnWorld con lo que hay en el zip
+  ownworld-logo.zip lugo borralo porfa". El zip (en la raíz, sin trackear) trae `favicon.svg`,
+  `favicon.ico`, `icon.svg`, `icon-full-bleed.svg`, `mark-mono-white.svg`, `mark-transparent.svg`,
+  `icon-{192,512,1024}.png`, `icon-ios-1024.png`, `mark-mono-white-1024.png` y
+  `mark-transparent-1024.png`. Reabre *Fuera de alcance* ("Isotipo nuevo para OwnWorld"), ahora
+  pedido por el usuario. Criterio del orquestador: como OwnMonetaryApp usa hoy `/icon.svg` (el
+  isotipo "M" actual, C-1 "usa el mismo de momento"), ese isotipo se conserva como logo propio de
+  finanzas antes de reemplazar los de OwnWorld.
+
+- **C-2 (implementador)** — Isotipo "M" conservado en `public/apps/finance/logo.svg` (logo de
+  OwnMonetaryApp en el registro). Reemplazados con el zip: `public/{icon.svg,icon-192.png,
+  icon-512.png,icon-full-bleed.svg,mark-transparent.svg}`, `app/icon.svg`, `app/favicon.ico` y
+  `app/apple-icon.png` (← `icon-ios-1024.png`, ahora 1024×1024 sin transparencia en vez de 180×180).
+  Sin uso, no agregados: `favicon.svg`, `icon-1024.png`, `mark-mono-white{,-1024}`,
+  `mark-transparent-1024.png`. **Pendientes con el diseño viejo** (el zip no los cubre):
+  `public/icon-maskable-512.png`, `app/opengraph-image.png`, `app/twitter-image.png`. Zip borrado.
+  Lint y build OK. → tester: ajustar el test C-1 (el `src` ahora es `/apps/finance/logo.svg`).
+
+## Notas de cierre
+
+**Resultado:** los 18 puntos de implementación (1.1–6.4) hechos y verificados; ninguno quedó sin
+hacer. Una sola ronda de implementador y una de tester, sin incidencias (`I-n`: ninguna).
+
+**Desvíos respecto del plan**
+
+- **6.4** — el estado "implementada" de la fase 0 se escribió en la celda de contenido de la fila
+  en `docs/suite-spec.md`, no en la columna "Criterio de cierre". Cosmético.
+- **Ejecución** — la primera sesión del implementador se cortó a mitad de la fase 1 (con los
+  `git mv` ya aplicados y cambios parciales sin `[x]`); se reanudó el mismo agente, que verificó el
+  estado parcial antes de seguir. Al inicio faltaba `.env.local`, lo restauró el usuario.
+- Un `npm install` del implementador había cambiado `name` en `package-lock.json`; se revirtió, el
+  archivo queda sin cambios.
+
+**Verificado**
+
+- `grep` de 1.4, 2.2 y de rutas por concatenación: vacíos (implementador y orquestador).
+- `npm run lint` y `npm run build` OK.
+- e2e: `e2e/suite-shell.spec.ts` (nuevo, 8 tests: P.1–P.7, con P.7 dividido en desktop y mobile;
+  P.4/P.5 crean y borran datos con prefijo `e2e-suite-shell-…`). P.8: actualizados
+  `amount-input-calculator`, `dashboard`, `movement-types-exclude`, `transfers` y `auth.spec.ts`;
+  ya no queda ninguna URL vieja en `e2e/`, así que ningún spec depende de los redirects.
+  Suite completa: 36 pasan, 0 fallan.
+- A mano: `/manifest.webmanifest` con `name`/`short_name` "OwnWorld", la descripción nueva y
+  `start_url` en `/protected`; `<meta property="og:title" content="OwnWorld">` en `/`.
+
+**No se pudo verificar**
+
+- **El nombre de la PWA ya instalada en el celular** — depende de cuándo el sistema refresque el
+  manifest; el plan no lo fuerza.
+- **El flujo completo de pagar desde el dashboard** (P.5): se comprobó el `href` del link "Pagar"
+  del card "Vencimientos" (`returnTo=%2Fprotected%2Ffinance`), pero no se siguió el clic hasta
+  guardar el pago y verificar que vuelve a `/protected/finance`.
+- **La revalidación de caché (`revalidatePath`) fuera de cuentas** — P.4 la cubre solo para
+  cuentas; para presupuestos, deudas, tipos y transferencias depende de que 1.2 haya cambiado ambos
+  argumentos de `revalidateMyDataAndRedirect`, cosa que confirma el `grep` pero no un test (ver
+  *Riesgos conocidos*).
+- **Los redirects en producción (Netlify)** — se probaron con `next dev`; no se desplegó.
+
+### Correcciones posteriores
+
+- **C-1** — la app de finanzas se llama "OwnMonetaryApp" (nombre propio; el usuario aclaró que no
+  contradice la decisión de textos en español) y `AppDefinition` admite un `logo` propio
+  (`components/apps/app-icon.tsx`, con el icono lucide como fallback); por ahora usa `/icon.svg`,
+  el mismo isotipo de OwnWorld. Se ve en el lanzador, el `AppSwitcher`, el sidebar del lanzador y
+  el menú móvil. Incidencia **I-1** (lint roto por una variable sin usar en
+  `e2e/suite-shell.spec.ts`, que la ronda 1 no había detectado) resuelta. Test nuevo `C-1 — …`;
+  suite completa 37/37 y `npm run lint` limpio.
+  **No se pudo verificar:** el logo en los links a *otras* apps del menú móvil, porque hoy no hay
+  otra app registrada.

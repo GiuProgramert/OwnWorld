@@ -15,7 +15,7 @@ export default function DeleteBudgetForm({ initialValues }: Props) {
 
   const onSubmit = async () => {
     await deleteBudget(initialValues.id);
-    await revalidateMyDataAndRedirect("/protected/budgets");
+    await revalidateMyDataAndRedirect("/protected/finance/budgets");
   };
 
   return (

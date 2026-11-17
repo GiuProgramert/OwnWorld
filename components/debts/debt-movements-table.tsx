@@ -23,14 +23,14 @@ function PaymentActions({ id }: { id: string }) {
       <Link
         aria-label="Editar pago"
         className="flex justify-center items-center rounded-md hover:bg-blue-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/movements/edit/${id}`}
+        href={`/protected/finance/movements/edit/${id}`}
       >
         <Pencil className="h-6 w-6" />
       </Link>
       <Link
         aria-label="Eliminar pago"
         className="flex justify-center items-center rounded-md hover:bg-red-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/movements/delete/${id}`}
+        href={`/protected/finance/movements/delete/${id}`}
       >
         <TrashIcon className="h-6 w-6" />
       </Link>

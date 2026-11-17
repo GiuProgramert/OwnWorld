@@ -63,8 +63,8 @@ export default function CreateMovementForm({
 
     // Vuelve al listado filtrado por la cuenta usada, no por la principal.
     await revalidateMyDataAndRedirect(
-      "/protected/movements",
-      `/protected/movements?accountId=${data.account_id}`,
+      "/protected/finance/movements",
+      `/protected/finance/movements?accountId=${data.account_id}`,
     );
   };
 
@@ -89,7 +89,7 @@ export default function CreateMovementForm({
       );
     }
 
-    await revalidatePathServer("/protected/movements");
+    await revalidatePathServer("/protected/finance/movements");
   };
 
   return (

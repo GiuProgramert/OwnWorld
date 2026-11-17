@@ -4,13 +4,14 @@ import { LayoutGrid, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import AppIcon from "@/components/apps/app-icon";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { isNavItemActive, navItems } from "@/lib/nav-items";
+import { apps, getCurrentApp, isNavItemActive } from "@/lib/apps/registry";
 import { cn } from "@/lib/utils";
 
 function NavIcon({ icon: Icon, active }: { icon: LucideIcon; active: boolean }) {
@@ -38,9 +39,20 @@ function barLabelClass(active: boolean) {
 export default function MobileNav() {
   const pathname = usePathname();
 
-  const pinnedItems = navItems.filter((item) => item.mobilePinned);
-  const menuItems = navItems.filter((item) => !item.mobilePinned);
-  const menuActive = menuItems.some((item) => isNavItemActive(pathname, item.href));
+  const app = getCurrentApp(pathname);
+
+  // En el lanzador no hay app actual: la grilla de apps ya es la navegación.
+  if (!app) {
+    return null;
+  }
+
+  const { basePath } = app;
+  const pinnedItems = app.navItems.filter((item) => item.mobilePinned);
+  const menuItems = app.navItems.filter((item) => !item.mobilePinned);
+  const otherApps = apps.filter((other) => other.id !== app.id);
+  const menuActive = menuItems.some((item) =>
+    isNavItemActive(pathname, item.href, basePath)
+  );
 
   return (
     <nav
@@ -50,7 +62,7 @@ export default function MobileNav() {
     >
       <ul className="grid grid-cols-5 rounded-2xl border border-border bg-card/95 px-1 shadow-lg backdrop-blur">
         {pinnedItems.map((item) => {
-          const active = isNavItemActive(pathname, item.href);
+          const active = isNavItemActive(pathname, item.href, basePath);
 
           return (
             <li key={item.href}>
@@ -89,7 +101,7 @@ export default function MobileNav() {
               {/* flex + ancho de 1/3 en vez de grid: una fila incompleta queda centrada. */}
               <div className="flex flex-wrap justify-center gap-3">
                 {menuItems.map((item) => {
-                  const active = isNavItemActive(pathname, item.href);
+                  const active = isNavItemActive(pathname, item.href, basePath);
                   const Icon = item.icon;
 
                   return (
@@ -111,6 +123,37 @@ export default function MobileNav() {
                           <Icon className="h-7 w-7" />
                         </span>
                         <span className="text-xs leading-tight">{item.label}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </div>
+              <p className="px-1 pb-3 pt-4 text-sm font-medium text-muted-foreground">
+                Apps
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/protected"
+                    className="flex w-[calc((100%-1.5rem)/3)] flex-col items-center gap-2 rounded-2xl p-2 text-center"
+                  >
+                    <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-b from-muted to-muted/40 text-foreground shadow-sm">
+                      <LayoutGrid className="h-7 w-7" />
+                    </span>
+                    <span className="text-xs leading-tight">Todas las apps</span>
+                  </Link>
+                </DropdownMenuItem>
+                {otherApps.map((other) => {
+                  return (
+                    <DropdownMenuItem key={other.id} asChild>
+                      <Link
+                        href={other.basePath}
+                        className="flex w-[calc((100%-1.5rem)/3)] flex-col items-center gap-2 rounded-2xl p-2 text-center"
+                      >
+                        <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-b from-muted to-muted/40 text-foreground shadow-sm">
+                          <AppIcon icon={other.icon} logo={other.logo} size={28} />
+                        </span>
+                        <span className="text-xs leading-tight">{other.name}</span>
                       </Link>
                     </DropdownMenuItem>
                   );

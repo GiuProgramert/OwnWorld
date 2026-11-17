@@ -19,14 +19,14 @@ function MovementTypeActions({ id }: { id: string }) {
       <Link
         aria-label="Editar tipo de movimiento"
         className="flex justify-center items-center rounded-md hover:bg-blue-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/movement-types/edit/${id}`}
+        href={`/protected/finance/movement-types/edit/${id}`}
       >
         <Pencil className="h-6 w-6" />
       </Link>
       <Link
         aria-label="Eliminar tipo de movimiento"
         className="flex justify-center items-center rounded-md hover:bg-red-500 hover:text-white transition-colors duration-300 h-10 w-10"
-        href={`/protected/movement-types/delete/${id}`}
+        href={`/protected/finance/movement-types/delete/${id}`}
       >
         <TrashIcon className="h-6 w-6" />
       </Link>

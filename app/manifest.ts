@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "OwnMonetaryApp",
-    short_name: "OwnMonetary",
+    name: "OwnWorld",
+    short_name: "OwnWorld",
     description:
-      "Control de cuentas, movimientos y presupuestos personales.",
+      "Tus apps personales: finanzas, y lo que venga.",
     start_url: "/protected",
     // Scope en la raíz: el redirect a /auth/login cuando no hay sesión queda dentro
     // de la app instalada. Con el scope por defecto (/protected/) Chrome abriría el
